@@ -175,20 +175,20 @@ class ASRDataset(BaseDataset):
             )
 
     def tf_preprocess(self, path: tf.Tensor, audio: tf.Tensor, indices: tf.Tensor):
-        with tf.device("/CPU:0"):
-            signal = tf_read_raw_audio(audio, self.speech_featurizer.sample_rate)
-            signal = self.augmentations.signal_augment(signal)
-            features = self.speech_featurizer.tf_extract(signal)
-            features = self.augmentations.feature_augment(features)
-            input_length = tf.cast(tf.shape(features)[0], tf.int32)
+        #with tf.device("/CPU:0"):
+        signal = tf_read_raw_audio(audio, self.speech_featurizer.sample_rate)
+        signal = self.augmentations.signal_augment(signal)
+        features = self.speech_featurizer.tf_extract(signal)
+        features = self.augmentations.feature_augment(features)
+        input_length = tf.cast(tf.shape(features)[0], tf.int32)
 
-            label = tf.strings.to_number(tf.strings.split(indices), out_type=tf.int32)
-            label_length = tf.cast(tf.shape(label)[0], tf.int32)
+        label = tf.strings.to_number(tf.strings.split(indices), out_type=tf.int32)
+        label_length = tf.cast(tf.shape(label)[0], tf.int32)
 
-            prediction = self.text_featurizer.prepand_blank(label)
-            prediction_length = tf.cast(tf.shape(prediction)[0], tf.int32)
+        prediction = self.text_featurizer.prepand_blank(label)
+        prediction_length = tf.cast(tf.shape(prediction)[0], tf.int32)
 
-            return path, features, input_length, label, label_length, prediction, prediction_length
+        return path, features, input_length, label, label_length, prediction, prediction_length
 
     def parse(self, path: tf.Tensor, audio: tf.Tensor, indices: tf.Tensor):
         """
